@@ -69,7 +69,7 @@ console.log([
 
 ...[-2, -2]
 
-## Как в консоли вывести `yandex` вызвав функцию `fn`
+## Как вывести `yandex` вызвав функцию `fn`
 
 ~~~javascript
 var obj = {x: 'yandex'}
