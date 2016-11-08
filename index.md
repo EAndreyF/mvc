@@ -8,10 +8,6 @@ layout: default
 
 ## **{{ site.presentation.title }}** {#cover}
 
-<div class="s">
-    <div class="service">{{ site.presentation.service }}</div>
-</div>
-
 {% if site.presentation.nda %}
 <div class="nda"></div>
 {% endif %}
@@ -20,273 +16,222 @@ layout: default
 	<p class="author">{{ site.author.name }}, <br/> {{ site.author.position }}</p>
 </div>
 
-## Верхний колонтитул
+## &nbsp;
 {:.section}
 
-### Название раздела
+### Разминка
 
-## Заголовок
+## Какие есть типы в JS?
 
-### Вводный текст (первый уровень текста)
+* ...Number
+* ...String
+* ...Boolean
+* ...Undefined
+* ...Null
+* ...Object
+* ...Symbol
 
-*  Второй уровень текста
-	* Третий уровень текста (буллиты)
+## Что возвращает typeof?
 
-	1. Четвертый уровень текста
+* Number → <span>...number</span>
+* String → <span>...string</span>
+* Boolean → <span>...boolean</span>
+* Undefined → <span>...undefined</span>
+* Null → <span>...object</span>
+* Symbol → <span>...symbol</span>
+* Object → <span>...object</span>
+* ...Function → <span>...function</span>
 
-## Заголовок
+## Как проверить тип переменной `t`?
 
-### Вводный текст (первый уровень текста)
-![placeholder](pictures/vertical-placeholder.png){:.right-image}
+* Number, String, Boolean → <span>...`typeof t`</span>
+* ...undefined, null → <span>...`t === undefined, null`</span>
+* ...Массив → <span>...`Array.isArray(t)`</span>
+* ...Объект → <span>...`typeof t`</span><span>...`, Object(t) === t`</span>
 
-*  Второй уровень текста
-	* Третий уровень текста (буллиты)
-	* Третий уровень текста (буллиты)
+## Что будет в консоли?
 
-	1. Четвертый уровень текста
+~~~javascript
+var i = 10;
+var array = [];
+
+while (i--) {
+    array.push(function() {
+        return i + i;
+    });
+}
+
+console.log([
+     array[0](),
+     array[1](),
+])
+~~~
+
+...[-2, -2]
+
+## Как в консоли вывести `yandex` вызвав функцию `fn`
+
+~~~javascript
+var obj = {x: 'yandex'}
+function fn() { console.log(this.x); }
+~~~
+
+...fn.call(obj);
+
+...fn.apply(obj);
+
+...fn.bind(obj)();
+
+## Зачем нужны паттерны?
+
+* ...Не нужны для маленького приложения
+* ...Эффективно решать однотипные проблемы
+* ...Для быстрого понимания кода
+
 
 ## &nbsp;
-{:.with-big-quote}
-> Цитата
+{:.section}
 
-Текст
-{:.note}
+### MVC
 
-## Пример подсветки кода на JavaScript
+## Состав компонент
+![placeholder](pictures/mvc.png){:.right-image}
 
-~~~ javascript
-!function() {
-    var jar,
-        rstoreNames = /[^\w]/g,
-        storageInfo = window.storageInfo || window.webkitStorageInfo,
-        toString = "".toString;
-
-    jar = this.jar = function( name, storage ) {
-        return new jar.fn.init( name, storage );
-    };
-
-    jar.storages = [];
-    jar.instances = {};
-    jar.prefixes = {
-        storageInfo: storageInfo
-    };
-
-    jar.prototype = this.jar.fn = {
-        constructor: jar,
-
-        version: 0,
-
-        storages: [],
-        support: {},
-
-        types: [ "xml", "html", "javascript", "js", "css", "text", "json" ],
-
-        init: function( name, storage ) {
-
-            // Name of a object store must contain only alphabetical symbols or low dash
-            this.name = name ? name.replace( rstoreNames, "_" ) : "jar";
-            this.deferreds = {};
-
-            if ( !storage ) {
-                this.order = jar.order;
-            }
-
-            // TODO – add support for aliases
-            return this.setup( storage || this.storages );
-        },
-
-        // Setup for all storages
-        setup: function( storages ) {
-            this.storages = storages = storages.split ? storages.split(" ") : storages;
-
-            var storage,
-                self = this,
-                def = this.register(),
-                rejects = [],
-                defs = [];
-
-            this.stores = jar.instances[ this.name ] || {};
-
-            // Jar store meta-info in lc, if we don't have it – reject call
-            if ( !window.localStorage ) {
-                window.setTimeout(function() {
-                    def.reject();
-                });
-                return this;
-            }
-
-            // Initiate all storages that we can work with
-            for ( var i = 0, l = storages.length; i < l; i++ ) {
-                storage = storages[ i ];
-
-                // This check needed if user explicitly specified storage that
-                // he wants to work with, whereas browser don't implement it
-                if ( jar.isUsed( storage ) ) {
-
-                    // If jar with the same name was created, do not try to re-create store
-                    if ( !this.stores[ storage ] ) {
-
-                        // Initiate storage
-                        defs.push( this[ storage ]( this.name, this ) );
-
-                        // Initiate meta-data for this storage
-                        this.log( storage );
-                    }
-
-                } else {
-                    rejects.push( storage );
-                }
-            }
-
-            if ( !this.order ) {
-                this.order = {};
-
-                for ( i = 0, l = this.types.length; i < l; i++ ) {
-                    this.order[ this.types[ i ] ] = storages;
-                }
-            }
-
-            if ( rejects.length == storages.length ) {
-                window.setTimeout(function() {
-                    def.reject();
-                });
-
-            } else {
-                jar.when.apply( this, defs )
-                    .done(function() {
-                        jar.instances[ this.name ] = this.stores;
-
-                        window.setTimeout(function() {
-                            def.resolve([ self ]);
-                        });
-                    })
-                    .fail(function() {
-                        def.reject();
-                    });
-            }
-            return this;
-        }
-    };
-
-    jar.fn.init.prototype = jar.fn;
-
-    jar.has = function( base, name ) {
-        return !!jar.fn.meta( name, base.replace( rstoreNames, "_" ) );
-    };
-}.call( window );
-~~~
-
-## Пример подсветки кода
-{:.code-with-text}
-
-Вводный текст
-
-~~~ javascript
-var jar,
-    rstoreNames = /[^\w]/g,
-    storageInfo = window.storageInfo || window.webkitStorageInfo,
-    toString = "".toString;
-
-jar = this.jar = function( name, storage ) {
-    return new jar.fn.init( name, storage );
-};
-~~~
+* Model
+* View
+* Клей (Controller, Presenter, Router)
 
 ## &nbsp;
-{:.big-code}
+{:.section}
 
-~~~ javascript
-!function() {
-    var jar,
-        rstoreNames = /[^\w]/g,
-        storageInfo = window.storageInfo || window.webkitStorageInfo,
-        toString = "".toString;
+### Клиент-серверный MVC
 
-    jar = this.jar = function( name, storage ) {
-        return new jar.fn.init( name, storage );
-    };
+## Серверный рендеринг
 
-    jar.storages = [];
-    jar.instances = {};
-    jar.prefixes = {
-        storageInfo: storageInfo
-    };
-}.call( window );
-~~~
+* ...Только сервер генерит html
+* ...Быстрая шаблонизация и кэширование
+* ...Отсутствие динамики
+* ...Актуальная серверная модель
+* ...Сокрытие бизнес-логики
 
-## LaTeX
+![](pictures/server-mvc.png)
 
-Библиотека для латекса довольно тяжелая, а нужна она в редких случаях.
-Поэтому она не включена в репу, ее нужно либо установить через bower либо иметь интернет.
+// Примеры сайтов с серверным рендерингом
 
-When $a \ne 0$, there are two solutions to \(ax^2 + bx + c = 0\) and they are
-$$x = {-b \pm \sqrt{b^2-4ac} \over 2a}.$$
+## Клиентский рендеринг
 
-## Заголовок
-{:.images}
+* ...Долгая первоначальная отрисовка страницы
+* ...Не рабочий сайт при отключенном JS
+* ...Интерактивность
+* ...Открытая бизнес-логика
+* ...Синхронизация модели
 
-![](pictures/horizontal-placeholder.png)
-*Текст*
+![](pictures/client-mvc.png)
 
-![](pictures/horizontal-placeholder.png)
-*Текст*
+## Клиент-серверный рендеринг
 
-![](pictures/horizontal-placeholder.png)
-*Текст*
+* ...Быстрая первоначальная загрузка
+* ...Работает при отключении JS
+* ...Интерктивность
+* ...Сокрытие нужной части бизнес-логики
+* ...Синхронизация модели
 
-## Заголовок
-{:.images .two}
+![](pictures/client-server-mvc.png)
 
-![](pictures/horizontal-middle-placeholder.png)
-*Текст*
+// Нравится последний подход, говорить будем только про MVC на клиенте
 
-![](pictures/horizontal-middle-placeholder.png)
-*Текст*
+## Домашнее задание
 
-## Заголовок
-{:.center}
+* Написать собственный MVC
+* Написать TodoMVC
 
-![](pictures/horizontal-big-placeholder.png){:.tmp}
+![](pictures/todomvc.png)
 
-## **![](pictures/cover-placeholder.png)**
+## Клиентский MVC
+{:.section}
 
-## ![](pictures/horizontal-cover-placeholder.png)
-{:.cover}
+### View (представление)
 
-## Таблица
+## Что такое представление?
 
-|  Locavore      | Umami       | Helvetica | Vegan     |
-+----------------|-------------|-----------|-----------+
-| Fingerstache   | Kale        | Chips     | Keytar    |
-| Sriracha       | Gluten-free | Ennui     | Keffiyeh  |
-| Thundercats    | Jean        | Shorts    | Biodiesel |
-| Terry          | Richardson  | Swag      | Blog      |
-+----------------|-------------|-----------|-----------+
+* HTML
+* Биндинги
+* Состояние
+* Перерисовка
 
+## Задача
 
-## Таблица с дополнительным полем
+* Отрендерить шаблон / подвязаться к html
+* Обновление представления новыми данными
+* Подписка на пользовательские события
 
-{:.with-additional-line}
-|  Locavore      | Umami       | Helvetica | Vegan     |
-+----------------|-------------|-----------|-----------+
-| Fingerstache   | Kale        | Chips     | Keytar    |
-| Sriracha       | Gluten-free | Ennui     | Keffiyeh  |
-| Thundercats    | Jean        | Shorts    | Biodiesel |
-| Terry          | Richardson  | Swag      | Blog      |
-+----------------|-------------|-----------|-----------+
-| Terry          | Richardson  | Swag      | Blog      |
+## Анализ альтернатив
 
-## **Контакты** {#contacts}
+* ...Низкая или высокая интерактивность
+* ...Сервер поставляет разметку или данные
+* ...Первичность модели или разметки (чтение из DOM)
+* ...Гранулярность обновления (представление, элемент, строка)
+* ...CSS или собственные селекторы биндингов
 
-<div class="info">
-<p class="author">{{ site.author.name }}</p>
-<p class="position">{{ site.author.position }}</p>
+## Клиентский MVC
+{:.section}
 
-    <div class="contacts">
-        <p class="contacts-left contacts-top phone">+7 (000) 000-00-00</p>
-        <p class="contacts-left mail">почта@yandex-team.ru</p>
-        <p class="contacts-right contacts-top twitter">@twitter</p>
-        <!-- <p class="contacts-right contacts-bottom vk">vk</p> -->
-        <p class="contacts-right facebook">facebook</p>
-    </div>
-</div>
+### Model
+
+## Состав
+![](pictures/model-detail.png)
+
+## Задача
+
+* ...Хранить состояние приложения
+* ...Получать / обновлять состояние на сервере
+* ...Не допускать дублирования сущностей
+* ...Генерировать событие при изменении (альтернативы?)
+* ...Изменение вложенных моделей
+
+## Клиентский MVC
+{:.section}
+
+### Controller
+
+## Задача
+
+* ...Роутинг приложения
+* ...Стейт приложения (онлайн, офлайн)
+* ...Связь модели и представления
+
+## Клиентский MVC
+{:.section}
+
+### Альтернативы
+
+## MVC, MVP, MVVM
+![](pictures/mv.png)
+
+[MV*](https://addyosmani.com/blog/understanding-mvc-and-mvp-for-javascript-and-backbone-developers/)
+
+## &nbsp;
+{:.section}
+
+### Собственный MVC
+
+## С чего начать
+
+* ...Модульность → <span>...CommonJS модули + browserify</span>
+* ...Событийная модель → <span>...EventEmitter + listenTo</span>
+* ...Шаблонизация → <span>...ES6 шаблоны</span>
+* ...Работа с API → <span>...абстракция над LocalStorage</span>
+* ...Клиентский роутинг → <span>...historyAPI</span>
+* ...Выделение компонентов и определение ответственности
+
+[SPA](http://singlepageappbook.com/)
+<i>Без части implementing</i>
+
+[TodoMVC](http://todomvc.com/)
+
+[TodoMVC template](https://github.com/hse2016/todomvc-app-template)
+
+## &nbsp;
+{:.section}
+
+### Вопросы?

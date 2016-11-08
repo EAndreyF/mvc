@@ -12,13 +12,13 @@ kramdown:
   enable_coderay: false
 
 presentation:
-    title: Название темы
-    service: Сервис
-    nda: true
+    title: Архитектура веб приложений
+    service: Яндекс.Маркет
+    nda: false
 
 author:
-    name: Автор
-    position: Должность
+    name: Андрей Евстропов
+    position: Разработчик интерфейсов
     company:
         name: Яндекс
         url:  http://yandex.ru/
